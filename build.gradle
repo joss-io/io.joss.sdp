@@ -1,0 +1,89 @@
+
+buildscript {
+
+  repositories {
+    jcenter()    
+  }
+
+  dependencies {
+    classpath(group: 'org.jfrog.buildinfo', name: 'build-info-extractor-gradle', version: '3.1.1')
+  }
+
+}
+
+
+plugins {
+  id "com.jfrog.artifactory" version "3.1.0"
+}
+
+apply plugin: 'java'
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.artifactory'
+
+version = currentVersion
+
+compileJava {
+  sourceCompatibility = 1.8
+  targetCompatibility = 1.8
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+}
+
+configurations { provided }
+
+sourceSets {
+    main {
+        compileClasspath += configurations.provided 
+    }
+}
+
+
+// In this section you declare the dependencies for your production and test code
+dependencies {
+
+    // The production code uses the SLF4J logging API at compile time
+    compile 'org.slf4j:slf4j-api:1.7.12'
+    provided 'org.projectlombok:lombok:1.16.6'
+
+    // test dependencies
+    testCompile 'junit:junit:4.12'
+    testCompile 'com.google.guava:guava:18.0'
+    
+}
+
+artifactory {
+
+    contextUrl = 'https://getjive.artifactoryonline.com/getjive/'
+ 
+    def ENV = System.getenv()
+    
+    publish {
+        repository {
+            repoKey = 'libs-snapshot-local'
+            username = ENV['ARTIFACTORY_USER']
+            password = ENV['ARTIFACTORY_API_KEY']
+            maven = true
+        }
+        
+	    defaults {
+		    publications('mavenJava')
+		    publishArtifacts = true
+		    properties = ['dev.team': 'rtc' ]
+		    publishPom = true
+	    }           
+        
+    }    
+    
+    clientConfig.publisher.repoKey = 'libs-snapshot-local'
+    clientConfig.publisher.username = ENV['ARTIFACTORY_USER'] 
+    clientConfig.publisher.password = ENV['ARTIFACTORY_API_KEY']
+        
+}
+
+
