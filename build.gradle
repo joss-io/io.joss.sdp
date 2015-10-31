@@ -35,6 +35,12 @@ publishing {
     }
 }
 
+repositories {
+  jcenter()    
+}
+
+
+
 configurations { provided }
 
 sourceSets {
