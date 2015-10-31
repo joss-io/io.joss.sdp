@@ -7,3 +7,8 @@ A simple Java SDP parser with no dependencies outside of Java 8.
 ```
 SessionDescription sdp = SessionDescription.parse(input);
 ```
+
+
+## Building
+
+  gradle
